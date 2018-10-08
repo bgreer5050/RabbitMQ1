@@ -41,6 +41,28 @@ namespace RabbitMQApp
                                 message.CardNumber,
                                 message.AmounToPay);
         }
+
+        public static void ReceiveMessage()
+        {
+            var consumer = new QueueingBasicConsumer(_model);
+            var msgCount = GetMessageCount(_model, QueueName);
+            _model.BasicConsume(QueueName, true, consumer);
+
+            var count = 0;
+
+            while (count < msgCount)
+            {
+                var message = (Payment)consumer.Queue.Dequeue().Body.DeSerialize(typeof(Payment));
+                count++;
+            }
+        }
+
+        private static uint GetMessageCount(IModel channel, string queueName)
+        {
+            var results = channel.QueueDeclare(queueName, true, false, false, null);
+            return results.MessageCount;
+        }
+
     }
 
     
