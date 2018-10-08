@@ -14,7 +14,7 @@ namespace RabbitMQApp
         private const string QueueName = "StandardQueue_ExampleQueue";
         private static IModel _model;
 
-        private static void CreateQueue()
+        public static void CreateQueue()
         {
             var _factory = new ConnectionFactory
             {
@@ -29,7 +29,7 @@ namespace RabbitMQApp
             
         }
 
-        private static void SendMessage(Payment message)
+        public static void SendMessage(Payment message)
         {
             // Leaving the exchange blank. Publish will use the default exchange
             // The message will be published to the StandardQueue_ExampleQueue queue

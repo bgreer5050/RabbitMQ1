@@ -9,55 +9,43 @@ using Newtonsoft.Json;
 using Newtonsoft;
 
 
+
 namespace RabbitMQApp
 {
     class Program
     {
+        private static ConnectionFactory _factory;
+        private static IConnection _connection;
+        private static IModel _model;
+
         static void Main(string[] args)
         {
-            //Make a connection to RabbitMQ
-            ConnectionFactory factory = new ConnectionFactory
-            {
-                HostName = "localhost",
-                UserName = "guest",
-                Password = "guest"
-            };
+            var payment1 = new Payment { AmounToPay = 250.0m, CardNumber = "1234123412341234", Name = "Mr S Haunts" };
+            var payment2 = new Payment { AmounToPay = 25.0m, CardNumber = "1234123412341234", Name = "Mr S Haunts" };
+            var payment3 = new Payment { AmounToPay = 12.0m, CardNumber = "1234123412341234", Name = "Mr S Haunts" };
+            var payment4 = new Payment { AmounToPay = 84.0m, CardNumber = "1234123412341234", Name = "Mr S Haunts" };
+            var payment5 = new Payment { AmounToPay = 3.0m, CardNumber = "1234123412341234", Name = "Mr S Haunts" };
+            var payment6 = new Payment { AmounToPay = 19.0m, CardNumber = "1234123412341234", Name = "Mr S Haunts" };
+            var payment7 = new Payment { AmounToPay = 16.7m, CardNumber = "1234123412341234", Name = "Mr S Haunts" };
+            var payment8 = new Payment { AmounToPay = 33.0m, CardNumber = "1234123412341234", Name = "Mr S Haunts" };
+            var payment9 = new Payment { AmounToPay = 29.0m, CardNumber = "1234123412341234", Name = "Mr S Haunts" };
+            var payment10 = new Payment { AmounToPay = 8.40m, CardNumber = "1234123412341234", Name = "Mr S Haunts" };
 
-            IConnection connection = factory.CreateConnection();
+            StandardQueue.CreateQueue();
 
-            //Open a channel to RabbitMQ
-            IModel channel = connection.CreateModel();  //This channel can now be used to send and receive messages
+            StandardQueue.SendMessage(payment1);
+            StandardQueue.SendMessage(payment2);
+            StandardQueue.SendMessage(payment3);
+            StandardQueue.SendMessage(payment4);
+            StandardQueue.SendMessage(payment5);
+            StandardQueue.SendMessage(payment6);
+            StandardQueue.SendMessage(payment7);
+            StandardQueue.SendMessage(payment8);
+            StandardQueue.SendMessage(payment9);
+            StandardQueue.SendMessage(payment10);
 
-            //Declare an exchange
-            channel.ExchangeDeclare("MyExchange", "direct");
-
-            //Declare a queue
-            channel.QueueDeclare("MyQueue");
-
-            //Bind the queue to the exchange
-            channel.QueueBind("MyQueue", "MyExchange","");
-
-
-            //RabbitMQ Message Workflow as it pertains to C# objects
-
-            //Create an object
-            Payment payment1 = new Payment {
-                                            AmounToPay = 25.0m,
-                                            CardNumber = "1234123412341234"
-                                            };
-
-            //Here we do two things.  First we serialize our object into a JSON string 
-            //then we call the GetBytes method on it to get a byte array
-
-            byte[] serialized = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(payment1));
-
-            //RabbitMQ deserailizes the object.  In C# if we were to deserialize the object
-            //we may go about it by getting the string and then use JsonConvert to
-            //deserialize
-            string bytesAsString = Encoding.UTF8.GetString(serialized);
-            Payment DeserializedPayment = JsonConvert.DeserializeObject<Payment>(bytesAsString);
-            
-
+            StandardQueue.ReceiveMessage();
+            Console.ReadLine();
         }
     }
 }
